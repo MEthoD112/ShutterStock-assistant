@@ -1,0 +1,31 @@
+{
+  "name": "ShutterStock-assistant",
+  "version": "1.0.0",
+  "description": "ShutterStock-assistant",
+  "main": "parse.js",
+  "scripts": {
+    "compare": "node compare.js compare",
+    "getHash": "node previewhash.js getHash",
+    "parse": "node parse.js parse"
+  },
+  "keywords": [
+    "nodejs",
+    "image",
+    "parser",
+    "shutterstock"
+  ],
+  "author": "Vitaly Mileshko",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.15.5",
+    "fs": "0.0.1-security",
+    "hamming-distance": "^1.0.0",
+    "imghash": "0.0.3",
+    "make-runnable": "^1.3.6",
+    "needle": "^2.0.1",
+    "request": "^2.83.0",
+    "tress": "^1.0.5"
+  }
+}
