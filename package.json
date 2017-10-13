@@ -1,12 +1,14 @@
 {
-  "name": "ShutterStock-assistant",
+  "name": "ShutterStockAssistant",
   "version": "1.0.0",
   "description": "ShutterStock-assistant",
   "main": "parse.js",
   "scripts": {
+    "downloadPreviews": "node downloadpreviews.js downloadPreviews",
     "compare": "node compare.js compare",
-    "getHash": "node previewhash.js getHash",
-    "parse": "node parse.js parse"
+    "getPreviewsHash": "node previewhash.js getPreviewsHash",
+    "parse": "node parse.js parse",
+    "getLocalImagesHashes": "node localimages.js getLocalImagesHashes"
   },
   "keywords": [
     "nodejs",

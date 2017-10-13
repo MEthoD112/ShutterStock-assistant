@@ -2,21 +2,27 @@ const fs = require('fs');
 const hamming = require('hamming-distance');
 
 module.exports.compare = function () {
-    const now = Date.now();
-    const results = [];
+  const now = Date.now();
+  const results = [];
 
-    fs.readFile('./data/previewsWithHash.json','utf8', function (err, data) {
-        const previews = JSON.parse(data);
+  fs.readFile('./data/previewsWithHash.json', 'utf8', function (err, data) {
+    const previews = JSON.parse(data);
+    fs.readFile('./data/imagesWithHash.json', 'utf8', function (err, data) {
+      const images = JSON.parse(data);
 
+      images.forEach(image => {
+        previews.forEach(preview => {
+         const dist = hamming(image.hash, preview.hash);
+
+        if (dist <= 8) {
+          results.push({ localImage: image.id, preview: preview.id, dist: dist });
+        }
+      });
     });
-    return 'Compare images hashes is executed';
-    //     const dist = hamming(results[0], results[1]);
-    //     if (dist <= 17) {
-    //       console.log('Images are similar');
-    //     } else {
-    //       console.log('Images are NOT similar');
-    //     }
-    //     console.log(Date.now() - now);
-    //   })
-  };
-  require('make-runnable');
+    console.log('Executed time: ' + (Date.now() - now));
+    fs.writeFileSync('./data/compare.json', JSON.stringify(results, null, 4));
+    });
+  });
+  return 'Comparing images and previews hashes is executed';
+};
+require('make-runnable');
