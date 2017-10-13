@@ -44,7 +44,7 @@ module.exports.parse = function () {
       });
       parseResults = parseResults.concat(objects);
       console.log('Parsed links: ' + parseResults.length);
-      callback(null, undefined);
+      callback();
     });
   }
 

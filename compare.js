@@ -3,7 +3,7 @@ const hamming = require('hamming-distance');
 
 module.exports.compare = function () {
   const now = Date.now();
-  const results = [];
+  const compareResults = [];
 
   fs.readFile('./data/previewsWithHash.json', 'utf8', function (err, data) {
     const previews = JSON.parse(data);
@@ -15,14 +15,14 @@ module.exports.compare = function () {
          const dist = hamming(image.hash, preview.hash);
 
         if (dist <= 8) {
-          results.push({ localImage: image.id, preview: preview.id, dist: dist });
+            compareResults.push({ localImage: image.id, preview: preview.id, dist: dist });
         }
       });
     });
     console.log('Executed time: ' + (Date.now() - now));
-    fs.writeFileSync('./data/compare.json', JSON.stringify(results, null, 4));
+    fs.writeFileSync('./data/compare.json', JSON.stringify(compareResults, null, 4));
     });
   });
-  return 'Comparing images and previews hashes is executed';
+  return 'Comparing images and previews hashes is executed!!!';
 };
 require('make-runnable');

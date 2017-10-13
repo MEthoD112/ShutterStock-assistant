@@ -23,7 +23,7 @@ module.exports.downloadPreviews = function () {
     const previewsDownloadingQueue = tress(function (image, callback) {
       downloadPreview(image.imageUrl, image.id, function () {
         console.log('Downloading ' + image.id);
-        callback()
+        callback();
       });
     }, previewsDownloadingQueueThreadsNumber);
 
@@ -34,6 +34,6 @@ module.exports.downloadPreviews = function () {
 
     previews.forEach(preview => previewsDownloadingQueue.push(preview));
   })
-  return 'Downloading previews is executed';
+  return 'Downloading previews is executed!!!';
 };
 require('make-runnable');
