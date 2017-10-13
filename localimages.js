@@ -20,6 +20,13 @@ module.exports.getLocalImagesHashes = function () {
     imagesGettingHashesQueue.drain = function () {
       console.log('Hashes of ' + localImagesresults.length + ' images are got');
       console.log('Executed time: ' + (Date.now() - now));
+      localImagesresults.sort((a, b) => {
+        if (a.id < b.id)
+          return -1;
+        if (a.id > b.id)
+          return 1;
+        return 0;
+      });
       fs.writeFileSync('./data/imagesWithHash.json', JSON.stringify(localImagesresults, null, 4));
     }
 

@@ -11,14 +11,17 @@ module.exports.compare = function () {
       const images = JSON.parse(data);
 
       images.forEach(image => {
+        const results = [];  
         previews.forEach(preview => {
          const dist = hamming(image.hash, preview.hash);
 
-        if (dist <= 8) {
-            compareResults.push({ localImage: image.id, preview: preview.id, dist: dist });
+        if (dist <= 20) {
+            results.push({ localImage: image.id, preview: preview.id, dist: dist });
         }
+        });
+        results.sort((a, b) => a.dist - b.dist);
+        compareResults.push(results[0]);
       });
-    });
     console.log('Executed time: ' + (Date.now() - now));
     fs.writeFileSync('./data/compare.json', JSON.stringify(compareResults, null, 4));
     });
