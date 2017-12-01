@@ -1,7 +1,16 @@
 [
-    "1.jpg",
-    "2.jpg",
-    "3.jpg",
-    "4.jpg",
-    "5.jpg"
+    "./images/1.jpg",
+    "./images/2.jpg",
+    "./images/3.jpg",
+    "./images/4.jpg",
+    "./images/dir/beauty_salon_bonuses.png",
+    "./images/dir/bonus_repair.png",
+    "./images/dir/cafe_bonuses.png",
+    "./images/dir/car_bonuses.png",
+    "./images/dir/DPP_0001.JPG.jpg",
+    "./images/dir/folder/image.jpg",
+    "./images/dir/folder/papka/image.jpg",
+    "./images/dir/new_bonuses.png",
+    "./images/dir/pimgpsh_fullsize_distr.jpg",
+    "./images/dir/products_bonuses.png"
 ]

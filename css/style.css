@@ -1,0 +1,13 @@
+.table {
+    border: 1px solid red;
+    max-width: 1500px;
+}
+
+.table tr td, .table tr th {
+    border: 1px solid red;
+}
+
+.image {
+    width:180px;
+    height: 100px;
+}
