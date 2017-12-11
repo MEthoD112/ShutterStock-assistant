@@ -3,7 +3,6 @@ const tress = require('tress');
 const Jimp = require('jimp');
 const _ = require('lodash');
 const hamming = require('hamming-distance');
-const now = Date.now();
 
 function removeMappedResults(images, previews, mappedResults) {
   mappedResults.forEach(result => {
@@ -35,15 +34,13 @@ function fullfillPreviewsQueue(previews, previewsQueue) {
   });
 }
 
-function getPreviews(image, result, preview, previewCallback, compareResults, previewsQueue, count) {
+function getPreviews(image, result, preview, previewCallback, compareResults, previewsQueue) {
   const dist = hamming(image.hash, preview.hash);
-  count.push(1);
-  console.log((Date.now() - now) / 1000 + ' seconds Images: ' + count.length);
   if (dist < 20) {
   Jimp.read('previews/' + preview.id + '.jpg')
     .then(Preview => {
       const diff = Jimp.diff(result, Preview, 0.1);
-      if (diff.percent < 0.5) {
+      if (diff.percent < 0.47) {
         compareResults.push({ image: image, preview: preview, hammingDist: dist, pixelMatchDiff: diff.percent });
         _.remove(previewsQueue.waiting, queueItem => queueItem.data);
       }
@@ -59,7 +56,7 @@ function getImage(previewsAndImage, callback, compareResults, imagesQueue, count
     .then(result => {
 
       const previewsQueue = tress((preview, previewCallback) => {
-        getPreviews(previewsAndImage.image, result, preview, previewCallback, compareResults, previewsQueue, count);
+        getPreviews(previewsAndImage.image, result, preview, previewCallback, compareResults, previewsQueue);
       }, 8);
 
       previewsQueue.drain = callback;
@@ -70,12 +67,11 @@ function getImage(previewsAndImage, callback, compareResults, imagesQueue, count
 
 }
 
-function mapImagesAndPreviews(resolve, reject) {
+function mapImagesAndPreviews(resolve, reject, now) {
   const compareResults = [];
-  const count = [];
 
   const imagesQueue = tress((previewsAndImage, callback) => {
-    getImage(previewsAndImage, callback, compareResults, imagesQueue, count);
+    getImage(previewsAndImage, callback, compareResults, imagesQueue);
   }, 8);
 
   imagesQueue.drain = function () {
@@ -85,7 +81,7 @@ function mapImagesAndPreviews(resolve, reject) {
         console.log(`${compareResults.length} new results are got`);
         previousMappedResults.push(...compareResults);
         fs.writeFileSync('./data/map.json', JSON.stringify(previousMappedResults, null, 4));
-        console.log('Parsing time: ' + (Date.now() - now) / 1000 + ' seconds');
+        console.log('Mapping time: ' + (Date.now() - now) / 1000 + ' seconds');
         resolve(console.log('Mapping is complited!!!'));
       }, err => console.error(err));
   }
@@ -96,8 +92,9 @@ function mapImagesAndPreviews(resolve, reject) {
 }
 
 module.exports = function () {
+  const now = Date.now();
   console.log('Mapping images and previews is executed!!!');
   return new Promise((resolve, reject) => {
-    mapImagesAndPreviews(resolve, reject);
+    mapImagesAndPreviews(resolve, reject, now);
   });
 };

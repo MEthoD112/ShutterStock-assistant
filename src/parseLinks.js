@@ -3,7 +3,6 @@ const needle = require('needle');
 const cheerio = require('cheerio');
 const tress = require('tress');
 const _ = require('lodash');
-const now = Date.now();
 
 function parseIdFromUrl(url) {
   return url.slice(url.lastIndexOf('-') + 1, url.lastIndexOf('.'));
@@ -21,7 +20,7 @@ function drain(parseResults, previousResults, resolve) {
   if (!previousResults.length) writeResultsToJson('./data/previewsLinksDiff.json', parseResults);
   writeResultsToJson('./data/previewsLinks.json', parseResults);
   console.log('Parsed links total: ' + parseResults.length);
-  console.log('Parsing time: ' + (Date.now() - now) / 1000 + ' seconds');
+  //console.log('Parsing time: ' + (Date.now() - now) / 1000 + ' seconds');
   resolve(console.log('Parsing is complited!!!'));
 }
 
@@ -106,7 +105,7 @@ function getPageCountAsync(pagesParsingQueue, fullFillPagesParsingQueue) {
     .catch(err => console.error(err));
 }
 
-function parsePortfolio(previousResults, resolve) {
+function parsePortfolio(previousResults, resolve, now) {
   let parseResults = [];
   let isLinkFromPreviousParseReached = [];
 
@@ -126,12 +125,13 @@ function parsePortfolio(previousResults, resolve) {
 }
 
 module.exports = function () {
+  const now = Date.now();
   console.log('ShutterStock Previews Links Parsing is executed!!!');
   return new Promise((resolve, reject) => {
     fs.readFile('./data/previewsLinks.json', 'utf8')
       .then(previews => {
         const previousResults = previews ? JSON.parse(previews) : [];
-        parsePortfolio(previousResults, resolve);
+        parsePortfolio(previousResults, resolve, now);
       }, err => reject(console.error(err)));
   });
 };

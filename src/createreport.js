@@ -1,7 +1,7 @@
 const fs = require('fs-then');
 const excel = require('excel4node');
 const createHTML = require('create-html');
-const now = Date.now();
+
 const workBook = new excel.Workbook();
 
 const successMapingSheet = workBook.addWorksheet('Success mapping');

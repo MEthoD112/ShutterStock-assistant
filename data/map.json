@@ -1,0 +1,54 @@
+[
+    {
+        "image": {
+            "path": "./images/4.jpg",
+            "hash": "68e8ec60e0e2e0e4"
+        },
+        "preview": {
+            "id": "700149526",
+            "imageUrl": "https://thumb9.shutterstock.com/display_pic_with_logo/979052/700149526/stock-photo-the-fireman-in-the-helmet-ascends-the-automatic-staircase-700149526.jpg",
+            "hash": "68e8ec60e0e260e6"
+        },
+        "hammingDist": 2,
+        "pixelMatchDiff": 0.40235246235246236
+    },
+    {
+        "image": {
+            "path": "./images/3.jpg",
+            "hash": "071762d28b899b03"
+        },
+        "preview": {
+            "id": "648655441",
+            "imageUrl": "https://thumb7.shutterstock.com/display_pic_with_logo/979052/648655441/stock-photo-mom-takes-pictures-of-a-child-in-the-park-in-summer-648655441.jpg",
+            "hash": "071760cb8d8900df"
+        },
+        "hammingDist": 16,
+        "pixelMatchDiff": 0.454007662835249
+    },
+    {
+        "image": {
+            "path": "./images/2.jpg",
+            "hash": "7b407960f0d0e0f0"
+        },
+        "preview": {
+            "id": "623803895",
+            "imageUrl": "https://thumb7.shutterstock.com/display_pic_with_logo/979052/623803895/stock-photo-funny-kid-refuses-to-eat-porridge-623803895.jpg",
+            "hash": "7b40f980f0d0c0f8"
+        },
+        "hammingDist": 6,
+        "pixelMatchDiff": 0.3265170220725776
+    },
+    {
+        "image": {
+            "path": "./images/1.jpg",
+            "hash": "ce060f07061f0df0"
+        },
+        "preview": {
+            "id": "556032451",
+            "imageUrl": "https://thumb7.shutterstock.com/display_pic_with_logo/979052/556032451/stock-photo-yoga-woman-nature-556032451.jpg",
+            "hash": "ce060f070e0f20f9"
+        },
+        "hammingDist": 8,
+        "pixelMatchDiff": 0.2732340425531915
+    }
+]

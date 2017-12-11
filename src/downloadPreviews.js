@@ -1,56 +1,57 @@
-const fs = require('fs-then');
 const request = require('request');
-const tress = require('tress');
 const progress = require('request-progress');
-const now = Date.now();
+const logger = require('./logger');
+const utils = require('./utils');
 
-function fullfillPreviewsDownloadingQueue(previews, previewsDownloadingQueue, resolve) {
-  if (!previews.length) resolve(console.log('All previews are downloaded!!!'));
-  previews.forEach(preview => previewsDownloadingQueue.push(preview));
+let errorResults = [], downloadResults = [];
+
+const handleError = (fileName, status) => {
+  errorResults.push({ id: fileName, status });
+}
+const handleDownloaded = fileName => {
+  downloadResults.push({ id: fileName });
 }
 
-function downloadPreview(url, fileName, errorResults, downloadResults, callback) {
-  progress(request(url))
-    .on('response', (response) => {
+function downloadPreview(image, callback) {
+  const fileName = image.id;
+
+  progress(request(image.imageUrl))
+    .on('response', response => {
       if (response.statusCode !== 200) {
-        console.log(`Error Dowloading ${fileName}.jpg`);
-        errorResults.push({ id: fileName, status: response.statusCode });
+        logger.log(`Error Dowloading ${fileName}.jpg`);
+        handleError(fileName, response.statusCode);
       }
     })
-    .on('error', () => { console.log('Error: ' + fileName) })
-    .on('end', () => { console.log(`${fileName}.jpg is downloaded!!!`); downloadResults.push({ id: fileName }); callback(); })
-    .pipe(fs.createWriteStream('./previews/' + fileName + '.jpg'))
+    .on('end', () => {
+      logger.log(`${fileName}.jpg is downloaded!!!`);
+      handleDownloaded(fileName);
+      callback();
+    })
+    .on('error', error => {
+      logger.error(`Error: ${fileName}. ${error}`);
+    })
+    .pipe(utils.createWriteStream(`./previews/${fileName}.jpg`));
 };
 
-function downloadPreviews(previews, resolve) {
-  let errorResults = [], downloadResults = [];
+function downloadPreviews(previewsLinks) {
+  const previews = utils.parseArrayData(previewsLinks);
+  return utils.handleInQueue(previews, downloadPreview, 10);
+};
 
-  const previewsDownloadingQueue = tress((image, callback) => {
-    downloadPreview(image.imageUrl, image.id, errorResults, downloadResults, callback);
-  }, 10);
-
-  previewsDownloadingQueue.drain = function () {
-    fs.readFile('./data/downloadPreviewsErr.json', 'utf8')
-      .then(downloadErr => {
-        const previousErrors = downloadErr ? JSON.parse(downloadErr) : [];
-        previousErrors.push(...errorResults);
-        fs.writeFileSync('./data/downloadPreviewsErr.json', JSON.stringify(previousErrors, null, 4));
-        console.log(`${downloadResults.length} Previews are downloaded!!!`);
-        console.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds');
-        resolve(console.log('Downloading previews is completed!!!'));
-      }, err => console.error(err));
-  };
-
-  fullfillPreviewsDownloadingQueue(previews, previewsDownloadingQueue, resolve);
-}
-
-module.exports = function () {
-  console.log('Downloading previews is executed!!!');
+module.exports = () => {
+  const now = Date.now();
+  logger.log(`Downloading previews is executed!!!`);
   return new Promise((resolve, reject) => {
-    fs.readFile('./data/previewsLinksDiff.json', 'utf8')
-      .then(previewsLinks => {
-        const previews = previewsLinks ? JSON.parse(previewsLinks) : [];
-        downloadPreviews(previews, resolve);
-      }, err => reject(console.error(err)));
+    utils.readFile('./data/previewsLinksDiff.json', 'utf8')
+      .then(downloadPreviews)
+      .then(() => utils.readFile('./data/downloadPreviewsErr.json'))
+      .then(downloadErr => {
+        const previousErrors = utils.parseArrayData(downloadErr);
+        previousErrors.push(...errorResults);
+        utils.writeToFileSync('./data/downloadPreviewsErr.json', previousErrors);
+        logger.log(`${downloadResults.length} Previews are downloaded!!!`);
+        logger.log(`Downloading time: ${(Date.now() - now) / 1000} seconds`);
+        resolve(logger.log(`Downloading previews is completed!!!`));
+      })
   });
 };

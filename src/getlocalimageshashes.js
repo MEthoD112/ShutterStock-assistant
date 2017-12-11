@@ -2,7 +2,6 @@ const fs = require('fs-then');
 const imghash = require('imghash');
 const tress = require('tress');
 const _ = require('lodash');
-const now = Date.now();
 
 function fullFillImagesGettingHashesQueue(images, imagesGettingHashesQueue, resolve) {
   if (!images.length) resolve(console.log('Hashes of all local images were got!!!'));
@@ -35,7 +34,7 @@ function getImageHash(image, callback, localImagesResults, errorResults) {
     .catch(err => callback(null, rejectHash(image, err, errorResults)));
 }
 
-function getImagesHashes(images, resolve) {
+function getImagesHashes(images, resolve, now) {
   let localImagesResults = [], errorResults = [];
 
   const imagesGettingHashesQueue = tress((image, callback) => {
@@ -60,12 +59,13 @@ function getImagesHashes(images, resolve) {
 }
 
 module.exports = function () {
+  const now = Date.now();
   console.log('Getting images hashes is executed!!!');
   return new Promise((resolve, reject) => {
     fs.readFile('./data/imagesDiff.json', 'utf8')
       .then(data => {
         const imagesPathes = data ? JSON.parse(data) : [];
-        getImagesHashes(imagesPathes, resolve);
+        getImagesHashes(imagesPathes, resolve, now);
       }, err => reject(console.error(err)));
   });
 };

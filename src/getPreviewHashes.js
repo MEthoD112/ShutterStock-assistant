@@ -2,7 +2,6 @@ const fs = require('fs-then');
 const imghash = require('imghash');
 const tress = require('tress');
 const _ = require('lodash');
-const now = Date.now();
 
 function fullFillPreviewsGettingHashesQueue(previews, previewsGettingHashesQueue, resolve) {
   if (!previews.length) resolve(console.log('Hashes of all previews were got!!!'));
@@ -31,7 +30,7 @@ function getPreviewHash(preview, callback, hashResults, errorResults) {
     .catch(err => callback(null, rejectHash(preview, err, errorResults)));
 }
 
-function getPreviewsHashes(previews, resolve) {
+function getPreviewsHashes(previews, resolve, now) {
   let hashResults = [], errorResults = [];
 
   const previewsGettingHashesQueue = tress((preview, callback) => {
@@ -61,12 +60,13 @@ function getPreviewsHashes(previews, resolve) {
 }
 
 module.exports = function () {
+  const now = Date.now();
   console.log('Getting previews hashes is executed!!!');
   return new Promise((resolve, reject) => {
     fs.readFile('./data/previewsLinksDiff.json', 'utf8')
       .then(previewLinks => {
         const previews = previewLinks ? JSON.parse(previewLinks) : [];
-        getPreviewsHashes(previews, resolve);
+        getPreviewsHashes(previews, resolve, now);
       }, err => reject(console.error(err)));
   });
 };

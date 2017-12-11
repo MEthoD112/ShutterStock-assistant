@@ -1,6 +1,5 @@
 const fs = require('fs-then');
 const _ = require('lodash');
-const now = Date.now();
 
 function getUnComparePreviews(previews, mappedResults) {
     mappedResults.forEach(result => _.remove(previews, preview => preview.id === result.preview.id));

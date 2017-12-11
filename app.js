@@ -7,22 +7,21 @@ const mappingImagesAndPreviews = require('./src/mapping');
 const getUnmappedItems = require('./src/getunmapped');
 const createReports = require('./src/createreport');
 
-(function () {
+(() => {
     console.log('ShutterStock Assistant is executed!!!');
 
     const previews =
         parseLinks()
-            .then(() => downloadPreviews())
-            .then(() => getPreviewsHashes());
+            .then(downloadPreviews)
+            .then(getPreviewsHashes);
 
-    const images = 
+    const images =
         getLocalImages()
-            .then(() => getLocalImagesHashes());
+            .then(getLocalImagesHashes);
 
     Promise.all([previews, images])
-        .then(() => mappingImagesAndPreviews())
-        .then(() => getUnmappedItems())
-        .then(() => createReports())
-        .catch((err) => console.error(err));
-
+        .then(mappingImagesAndPreviews)
+        .then(getUnmappedItems)
+        .then(createReports)
+        .catch(err => console.error(err));
 })();

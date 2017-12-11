@@ -1,9 +1,8 @@
 const fs = require('fs-then');
 const imghash = require('imghash');
 const _ = require('lodash');
-const now = Date.now();
 
-function saveImagesPathes(images, resolve, reject) {
+function saveImagesPathes(images, resolve, reject, now) {
     fs.readFile('./data/imagesWithHash.json', 'utf8')
         .then(data => {
             const imagesWithHash = data ? JSON.parse(data) : [];
@@ -31,9 +30,10 @@ function getLocalImagesPathes(dir, imagesList) {
 };
 
 module.exports = function () {
+    const now = Date.now();
     console.log('Getting local images is executed!!!');
     return new Promise((resolve, reject) => {
         const imagesPathes = getLocalImagesPathes('./images');
-        saveImagesPathes(imagesPathes, resolve, reject);
+        saveImagesPathes(imagesPathes, resolve, reject, now);
     });
 };
