@@ -1,12 +1,9 @@
-const fs = require('fs-then');
 const imghash = require('imghash');
 const tress = require('tress');
-const _ = require('lodash');
+const logger = require('./logger');
+const utils = require('./utils');
 
-function fullFillImagesGettingHashesQueue(images, imagesGettingHashesQueue, resolve) {
-  if (!images.length) resolve(console.log('Hashes of all local images were got!!!'));
-  images.forEach(image => imagesGettingHashesQueue.push(image));
-}
+let localImagesResults = [], errorResults = [];
 
 function sortResults(localImagesResults) {
   localImagesResults.sort((a, b) => {
@@ -16,56 +13,54 @@ function sortResults(localImagesResults) {
   });
 }
 
-function resolveHash(image, hash, localImagesResults) {
+function handleHashed(image, hash) {
   localImagesResults.push({ path: image, hash: hash })
-  console.log('Hashes got: ' + localImagesResults.length);
+  logger.log('Hashes got: ' + localImagesResults.length);
 }
 
-function rejectHash(image, err, errorResults) {
-  console.log('Hash error ' + err + 'Image: ' + image)
+function handleError(image, err) {
+  logger.log('Hash error ' + err + 'Image: ' + image)
   errorResults.push({ path: image.id, err: err });
 }
 
-function getImageHash(image, callback, localImagesResults, errorResults) {
+function getImageHash(image, callback) {
   Promise.resolve(imghash.hash(image))
     .then(hash => {
-      callback(null, resolveHash(image, hash, localImagesResults))
+      callback(null, handleHashed(image, hash))
     })
-    .catch(err => callback(null, rejectHash(image, err, errorResults)));
+    .catch(err => callback(null, handleError(image, err)));
 }
 
-function getImagesHashes(images, resolve, now) {
-  let localImagesResults = [], errorResults = [];
-
-  const imagesGettingHashesQueue = tress((image, callback) => {
-    getImageHash(image, callback, localImagesResults, errorResults);
-  }, 10);
-
-  imagesGettingHashesQueue.drain = function () {
-    fs.readFile('./data/imagesWithHash.json', 'utf8')
-      .then(data => {
-        const imagesWithHash = data ? JSON.parse(data) : [];
-        console.log('Hashes of ' + imagesWithHash.length + ' images have been already got');
-        console.log('Hashes of ' + localImagesResults.length + ' images are getting now');
-        localImagesResults.push(...imagesWithHash);
-        console.log('Hashes of ' + localImagesResults.length + ' images are got total');
-        sortResults(localImagesResults);
-        fs.writeFileSync('./data/imagesWithHash.json', JSON.stringify(localImagesResults, null, 4))
-        resolve(console.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
-      }, err => console.error(err));
-  };
-
-  fullFillImagesGettingHashesQueue(images, imagesGettingHashesQueue, resolve);
+function getImagesHashes(imagesJSON) {
+  const images = utils.parseArrayData(imagesJSON);
+  return utils.handleInQueue(images, downloadPreview, 10);
 }
 
-module.exports = function () {
+module.exports = () => {
   const now = Date.now();
-  console.log('Getting images hashes is executed!!!');
+  logger.log('Getting images hashes is executed!!!');
   return new Promise((resolve, reject) => {
-    fs.readFile('./data/imagesDiff.json', 'utf8')
-      .then(data => {
-        const imagesPathes = data ? JSON.parse(data) : [];
-        getImagesHashes(imagesPathes, resolve, now);
-      }, err => reject(console.error(err)));
+    utils.readFile('./data/imagesDiff.json')
+      .then(getImagesHashes)
+      .then(() => utils.readFile('./data/imagesWithHash.json'))
+      .then(imagesWithHashJson => {
+        const imagesWithHash = utils.parseArrayData(imagesWithHashJson);
+        logger.log('Hashes of ' + imagesWithHash.length + ' images have been already got');
+        logger.log('Hashes of ' + localImagesResults.length + ' images are getting now');
+        imagesWithHash.push(...localImagesResults);
+        logger.log('Hashes of ' + imagesWithHash.length + ' images are got total');
+        sortResults(imagesWithHash);
+        utils.writeFileSync('./data/imagesWithHash.json', imagesWithHash);
+        return utils.readFile('./data/imagesWithHashErr.json');
+      })
+      .then(imageHashErrJSon => {
+        const imageHashErrs = utils.parseArrayData(imageHashErrJSon);
+        logger.log('Hash errors of ' + imageHashErrs.length + ' images have been already got');
+        logger.log('Hash errors of ' + errorResults.length + ' images are getting now');
+        imageHashErrs.push(...errorResults);
+        logger.log('Hash errors of ' + imageHashErrs.length + ' images are got total');
+        utils.writeToFileSync('./data/imagesWithHashErr.json', imageHashErrs);
+        resolve(logger.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
+      }, err => reject(logger.error(err)));
   });
 };

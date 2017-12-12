@@ -14,7 +14,6 @@ const handleDownloaded = fileName => {
 
 function downloadPreview(image, callback) {
   const fileName = image.id;
-
   progress(request(image.imageUrl))
     .on('response', response => {
       if (response.statusCode !== 200) {
@@ -42,7 +41,7 @@ module.exports = () => {
   const now = Date.now();
   logger.log(`Downloading previews is executed!!!`);
   return new Promise((resolve, reject) => {
-    utils.readFile('./data/previewsLinksDiff.json', 'utf8')
+    utils.readFile('./data/previewsLinksDiff.json')
       .then(downloadPreviews)
       .then(() => utils.readFile('./data/downloadPreviewsErr.json'))
       .then(downloadErr => {
@@ -52,6 +51,6 @@ module.exports = () => {
         logger.log(`${downloadResults.length} Previews are downloaded!!!`);
         logger.log(`Downloading time: ${(Date.now() - now) / 1000} seconds`);
         resolve(logger.log(`Downloading previews is completed!!!`));
-      })
+      }, err => reject(console.error(err)));
   });
 };

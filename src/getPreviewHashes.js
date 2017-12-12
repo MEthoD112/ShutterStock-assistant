@@ -1,72 +1,56 @@
-const fs = require('fs-then');
 const imghash = require('imghash');
-const tress = require('tress');
-const _ = require('lodash');
+const logger = require('./logger');
+const utils = require('./utils');
 
-function fullFillPreviewsGettingHashesQueue(previews, previewsGettingHashesQueue, resolve) {
-  if (!previews.length) resolve(console.log('Hashes of all previews were got!!!'));
-  previews.forEach(preview => previewsGettingHashesQueue.push(preview));
-}
+let hashResults = [], errorResults = [];
 
-function writeResultsToJson(url, results) {
-  fs.writeFileSync(url, JSON.stringify(results, null, 4));
-}
-
-function resolveHash(preview, hash, hashResults) {
+function handleHashed(preview, hash) {
   hashResults.push({ id: preview.id, imageUrl: preview.imageUrl, hash: hash });
-  console.log('Hashes got: ' + hashResults.length);
+  logger.log('Hashes got: ' + hashResults.length);
 }
 
-function rejectHash(preview, err, errorResults) {
-  console.log('Hash error: ' + err + '  FileName: ' + preview.id);
+function handleError(preview, err) {
+  logger.log('Hash error: ' + err + '  FileName: ' + preview.id);
   errorResults.push({ id: preview.id, err: err });
 }
 
-function getPreviewHash(preview, callback, hashResults, errorResults) {
+function getPreviewHash(preview, callback) {
   Promise.resolve(imghash.hash('previews/' + preview.id + '.jpg'))
     .then(hash => {
-      callback(null, resolveHash(preview, hash, hashResults))
+      callback(null, handleHashed(preview, hash))
     })
-    .catch(err => callback(null, rejectHash(preview, err, errorResults)));
+    .catch(err => callback(null, handleError(preview, err)));
 }
 
-function getPreviewsHashes(previews, resolve, now) {
-  let hashResults = [], errorResults = [];
-
-  const previewsGettingHashesQueue = tress((preview, callback) => {
-    getPreviewHash(preview, callback, hashResults, errorResults);
-  }, 10);
-
-  previewsGettingHashesQueue.drain = function () {
-    fs.readFile('./data/previewsWithHash.json', 'utf8')
-      .then(data => {
-        const previewsWithHash = data ? JSON.parse(data) : [];
-        console.log('Hashes of ' + previewsWithHash.length + ' previews have been already got');
-        console.log('Hashes of ' + hashResults.length + ' previews are getting now');
-        hashResults.push(...previewsWithHash);
-        console.log('Hashes of ' + hashResults.length + ' previews are got total');
-        writeResultsToJson('./data/previewsWithHash.json', hashResults);
-        fs.readFile('./data/previewsWithHashErr.json', 'utf8')
-        .then(errors => {
-          const previousErrors = errors ? JSON.parse(errors) : [];
-          previousErrors.push(...errorResults);
-          writeResultsToJson('./data/previewsWithHashErr.json', previousErrors);
-          resolve(console.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
-        }, err => console.error(err));  
-      }, err => console.error(err));
-  }
-
-  fullFillPreviewsGettingHashesQueue(previews, previewsGettingHashesQueue, resolve);
+function getPreviewsHashes(previewsLinks) {
+  const previews = utils.parseArrayData(previewsLinks);
+  return utils.handleInQueue(previews, getPreviewHash, 10);
 }
 
-module.exports = function () {
+module.exports = () => {
   const now = Date.now();
-  console.log('Getting previews hashes is executed!!!');
+  logger.log('Getting previews hashes is executed!!!');
   return new Promise((resolve, reject) => {
-    fs.readFile('./data/previewsLinksDiff.json', 'utf8')
-      .then(previewLinks => {
-        const previews = previewLinks ? JSON.parse(previewLinks) : [];
-        getPreviewsHashes(previews, resolve, now);
-      }, err => reject(console.error(err)));
+    utils.readFile('./data/previewsLinksDiff.json')
+      .then(getPreviewsHashes)
+      .then(() => utils.readFile('./data/previewsWithHashErr.json'))
+      .then(previewsErr => {
+        const previousErrors = utils.parseArrayData(previewsErr);
+        logger.log('Hash errors of ' + previousErrors.length + ' previews have been already got');
+        logger.log('Hash errors of ' + errorResults.length + ' previews are getting now');
+        previousErrors.push(...errorResults);
+        logger.log('Hash errors of ' + previousErrors.length + ' previews are got total');
+        utils.writeToFileSync('./data/previewsWithHashErr.json', previousErrors);
+        return utils.readFile('./data/previewsWithHash.json');
+      })
+      .then(previews => {
+        const previewsWithHash = utils.parseArrayData(previews);
+        logger.log('Hashes of ' + previewsWithHash.length + ' previews have been already got');
+        logger.log('Hashes of ' + hashResults.length + ' previews are getting now');
+        hashResults.push(...previewsWithHash);
+        logger.log('Hashes of ' + hashResults.length + ' previews are got total');
+        utils.writeToJsonSync('./data/previewsWithHash.json', hashResults);
+        resolve(logger.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
+      }, err => reject(logger.error(err)));
   });
 };

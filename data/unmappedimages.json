@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "path": "./images/1.jpg",
+        "hash": "ce060f07061f0df0"
+    },
+    {
+        "path": "./images/2.jpg",
+        "hash": "7b407960f0d0e0f0"
+    },
+    {
+        "path": "./images/3.jpg",
+        "hash": "071762d28b899b03"
+    },
+    {
+        "path": "./images/4.jpg",
+        "hash": "68e8ec60e0e2e0e4"
+    }
+]
