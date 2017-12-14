@@ -2,6 +2,26 @@ const fs = require('fs-then');
 const tress = require('tress');
 const logger = require('./logger');
 
+class Queue { 
+  constructor(items, handleItem, threadsCount) {
+    this.items = items;
+    this.handleItem = handleItem; 
+    this.queue = tress(handleItem, threadsCount);
+  }     
+  fullfillQueue() {
+    const self = this;
+    self.items.forEach(item => self.queue.push(item));
+
+    return new Promise((resolve, reject) => {
+      if (!self.items.length) {
+        resolve(logger.log('All items are got!!!'));
+      } else {
+        self.queue.drain = resolve;
+      }
+    });
+  }   
+}
+
 module.exports = {
     parseArrayData: arrayData => arrayData ? JSON.parse(arrayData) : [],
     readFile: path => fs.readFile(path, 'utf8'),
@@ -11,32 +31,8 @@ module.exports = {
     writeFile: (path, content) => fs.writeFile(path, content),
     createWriteStream: path => fs.createWriteStream(path),
     handleInQueue: (items, handleItem, threadsCount) => {
-      return new Promise((resolve, reject) => {
-        const queue = tress(handleItem, threadsCount);
-        if (!items.length) {
-          resolve(logger.log('All items are got!!!'));
-        } else {
-          queue.drain = resolve;
-          items.forEach(item => queue.push(item));
-        }
-      });
+      const queue = new Queue(items, handleItem, threadsCount);
+      return queue.fullfillQueue();
     },
-    Queue: class { 
-        constructor(items, handleItem, threadsCount) {
-          this.items = items;
-          this.handleItem = handleItem; 
-          this.queue = tress(handleItem, threadsCount);
-        }     
-        fullfillQueue() {
-          const self = this; 
-          return new Promise((resolve, reject) => {
-            if (!self.items.length) {
-              resolve(logger.log('All items are got!!!'));
-            } else {
-              self.queue.drain = () => resolve(self.queue);
-              self.items.forEach(item => self.queue.push(item));
-            }
-          });
-        }   
-    }
+    Queue
 }
