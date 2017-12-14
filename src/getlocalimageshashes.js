@@ -2,6 +2,7 @@ const imghash = require('imghash');
 const tress = require('tress');
 const logger = require('./logger');
 const utils = require('./utils');
+const constants = require('./constants');
 
 let localImagesResults = [], errorResults = [];
 
@@ -33,7 +34,7 @@ function getImageHash(image, callback) {
 
 function getImagesHashes(imagesJSON) {
   const images = utils.parseArrayData(imagesJSON);
-  return utils.handleInQueue(images, downloadPreview, 10);
+  return utils.handleInQueue(images, getImageHash, constants.getImagesHashesThreads);
 }
 
 module.exports = () => {
@@ -50,7 +51,7 @@ module.exports = () => {
         imagesWithHash.push(...localImagesResults);
         logger.log('Hashes of ' + imagesWithHash.length + ' images are got total');
         sortResults(imagesWithHash);
-        utils.writeFileSync('./data/imagesWithHash.json', imagesWithHash);
+        utils.writeToFileSync('./data/imagesWithHash.json', imagesWithHash);
         return utils.readFile('./data/imagesWithHashErr.json');
       })
       .then(imageHashErrJSon => {
@@ -60,7 +61,7 @@ module.exports = () => {
         imageHashErrs.push(...errorResults);
         logger.log('Hash errors of ' + imageHashErrs.length + ' images are got total');
         utils.writeToFileSync('./data/imagesWithHashErr.json', imageHashErrs);
-        resolve(logger.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
+        resolve(logger.log('Getting images hashes time: ' + (Date.now() - now) / 1000 + ' seconds'));
       }, err => reject(logger.error(err)));
   });
 };

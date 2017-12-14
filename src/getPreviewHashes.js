@@ -1,6 +1,7 @@
 const imghash = require('imghash');
 const logger = require('./logger');
 const utils = require('./utils');
+const constants = require('./constants');
 
 let hashResults = [], errorResults = [];
 
@@ -24,7 +25,7 @@ function getPreviewHash(preview, callback) {
 
 function getPreviewsHashes(previewsLinks) {
   const previews = utils.parseArrayData(previewsLinks);
-  return utils.handleInQueue(previews, getPreviewHash, 10);
+  return utils.handleInQueue(previews, getPreviewHash, constants.getPreviewsHashesThreads);
 }
 
 module.exports = () => {
@@ -49,7 +50,7 @@ module.exports = () => {
         logger.log('Hashes of ' + hashResults.length + ' previews are getting now');
         hashResults.push(...previewsWithHash);
         logger.log('Hashes of ' + hashResults.length + ' previews are got total');
-        utils.writeToJsonSync('./data/previewsWithHash.json', hashResults);
+        utils.writeToFileSync('./data/previewsWithHash.json', hashResults);
         resolve(logger.log('Executed time: ' + (Date.now() - now) / 1000 + ' seconds'));
       }, err => reject(logger.error(err)));
   });

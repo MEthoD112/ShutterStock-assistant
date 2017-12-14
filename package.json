@@ -11,6 +11,7 @@
     "map": "node ./src/mapping.js map",
     "createReport": "node createreport.js createReport",
     "test": "node test.js",
+    "test1": "node ./src/getrelevant.js",
     "start": "node app.js"
   },
   "keywords": [
@@ -31,6 +32,7 @@
     "imghash": "0.0.3",
     "jimp": "file:jimp",
     "lodash": "^4.17.4",
+    "moment": "^2.19.4",
     "needle": "^2.0.1",
     "request": "^2.83.0",
     "request-progress": "^3.0.0",

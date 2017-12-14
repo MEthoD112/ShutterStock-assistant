@@ -1,4 +1,3 @@
-const fs = require('fs-then');
 const excel = require('excel4node');
 const createHTML = require('create-html');
 
@@ -132,19 +131,20 @@ function createHtml(mappedResults, unMappedPreviews, unMappedImages, downloadPre
   });
 }
 
-function createReport() {
+module.exports = () => {
+  logger.log('Creating reports is executed!!!');
   const promiseArray = [
-    fs.readFile('./data/map.json', 'utf8'),
-    fs.readFile('./data/unmappedpreviews.json', 'utf8'),
-    fs.readFile('./data/unmappedimages.json', 'utf8'),
-    fs.readFile('./data/downloadPreviewsErr.json', 'utf8')
+    utils.readFile('./data/map.json', 'utf8'),
+    utils.readFile('./data/unmappedpreviews.json', 'utf8'),
+    utils.readFile('./data/unmappedimages.json', 'utf8'),
+    utils.readFile('./data/downloadPreviewsErr.json', 'utf8')
   ];
   Promise.all(promiseArray)
     .then(data => {
-      const mappedResults = data[0] ? JSON.parse(data[0]) : [];
-      const unMappedPreviews = data[1] ? JSON.parse(data[1]) : [];
-      const unMappedImages = data[2] ? JSON.parse(data[2]) : [];
-      const downloadPreviewsErrors = data[3] ? JSON.parse(data[3]) : [];
+      const mappedResults = utils.parseArrayDate(data[0]);
+      const unMappedPreviews = utils.parseArrayDate(data[1]);
+      const unMappedImages = utils.parseArrayDate(data[2]);
+      const downloadPreviewsErrors = utils.parseArrayDate(data[3]);
 
       const htmlFile = createHtml(mappedResults, unMappedPreviews, unMappedImages, downloadPreviewsErrors);
 
@@ -153,19 +153,14 @@ function createReport() {
       fillTableRowForUnsuccessImagesMapping(unMappedImages);
       fillTableRowsForDownloadingErrors(downloadPreviewsErrors);
 
-      fs.writeFile('./reports/report.html', htmlFile)
+      utils.writeFile('./reports/report.html', htmlFile)
         .then(err => {
-          err ? console.error(err) : console.log('HTML report is created in ./reports/report.html');
+          err ? logger.error(err) : logger.log('HTML report is created in ./reports/report.html');
         });
 
       workBook.write('./reports/report.xlsx', err => {
-        err ? console.error(err) : console.log('Excel report is created in ./reports/report.xlsx.');
+        err ? logger.error(err) : logger.log('Excel report is created in ./reports/report.xlsx.');
       });
 
-    }, err => console.error(err));
-}
-
-module.exports = function () {
-  console.log('Creating reports is executed!!!');
-  createReport();
+    }, err => logger.error(err));
 }
