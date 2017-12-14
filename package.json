@@ -3,15 +3,6 @@
   "version": "0.0.0",
   "description": "ShutterStock-assistant",
   "scripts": {
-    "parseLinks": "node parseLinks.js parseLinks",
-    "downloadPreviews": "node downloadPreviews.js downloadPreviews",
-    "getPreviewsHashes": "node getPreviewHashes.js getPreviewsHashes",
-    "getLocalImages": "node getlocalimages.js getLocalImages",
-    "getLocalImagesHashes": "node getlocalimageshashes.js getLocalImagesHashes",
-    "map": "node ./src/mapping.js map",
-    "createReport": "node createreport.js createReport",
-    "test": "node test.js",
-    "test1": "node ./src/getrelevant.js",
     "start": "node app.js"
   },
   "keywords": [

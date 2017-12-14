@@ -6,7 +6,7 @@ const constants = require('./constants');
 let hashResults = [], errorResults = [];
 
 function handleHashed(preview, hash) {
-  hashResults.push({ id: preview.id, imageUrl: preview.imageUrl, hash: hash });
+  hashResults.push({ id: preview.id, imageUrl: preview.imageUrl, hash });
   logger.log('Hashes got: ' + hashResults.length);
 }
 

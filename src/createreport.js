@@ -1,5 +1,7 @@
 const excel = require('excel4node');
 const createHTML = require('create-html');
+const logger = require('./logger');
+const utils = require('./utils');
 
 const workBook = new excel.Workbook();
 
@@ -87,7 +89,7 @@ function fillHtmlTableWithUnsuccessMappedPreviews(results) {
 function fillHtmlTableWithUnsuccessMappedImages(results) {
   let html = '';
   results.forEach(result => {
-    html += `<tr><td>${result.path}</td><td><img src=../${result.path}></td></tr>`
+    html += `<tr><td>${result.path}</td><td><img class="image" src=../${result.path}></td></tr>`
   });
   return `<table class="table"><tr><th>PATH TO LOCAL IMAGE</th><th>LOCAL IMAGE PREVIEW</th></tr>${html}</table>`;
 }
@@ -141,10 +143,10 @@ module.exports = () => {
   ];
   Promise.all(promiseArray)
     .then(data => {
-      const mappedResults = utils.parseArrayDate(data[0]);
-      const unMappedPreviews = utils.parseArrayDate(data[1]);
-      const unMappedImages = utils.parseArrayDate(data[2]);
-      const downloadPreviewsErrors = utils.parseArrayDate(data[3]);
+      const mappedResults = utils.parseArrayData(data[0]);
+      const unMappedPreviews = utils.parseArrayData(data[1]);
+      const unMappedImages = utils.parseArrayData(data[2]);
+      const downloadPreviewsErrors = utils.parseArrayData(data[3]);
 
       const htmlFile = createHtml(mappedResults, unMappedPreviews, unMappedImages, downloadPreviewsErrors);
 

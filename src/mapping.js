@@ -50,7 +50,7 @@ function mapImagesAndPreviews(previewsAndImage) {
   return imageQueue.fullfillQueue();
 }
 
-modue.exports = () => {
+module.exports = () => {
   const now = Date.now();
   logger.log('Mapping images and previews is executed!!!');
   return new Promise((resolve, reject) => {

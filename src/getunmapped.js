@@ -29,8 +29,8 @@ module.exports = () => {
                 const unMappedPreviews = getUnComparePreviews(previews, mappedResults);
                 const unMappedImages = getUnCompareImages(images, mappedResults);
     
-                utils.writeFileSync('./data/unmappedpreviews.json', unMappedPreviews);
-                utils.writeFileSync('./data/unmappedimages.json', unMappedImages);
+                utils.writeToFileSync('./data/unmappedpreviews.json', unMappedPreviews);
+                utils.writeToFileSync('./data/unmappedimages.json', unMappedImages);
                 resolve(logger.log('Getting unmapped images and previews is complited'));
             }, err => reject(logger.error(err)));
     });

@@ -11,7 +11,7 @@ const createReports = require('./src/createreport');
 const logger = require('./src/logger');
 
 (() => {
-    console.log('ShutterStock Assistant is executed!!!');
+    logger.log('ShutterStock Assistant is executed!!!');
 
     const previews =
         parseLinks()
