@@ -13,17 +13,12 @@ const logger = require('./src/logger');
 (() => {
     logger.log('ShutterStock Assistant is executed!!!');
 
-    const previews =
-        parseLinks()
-            .then(downloadPreviews)
-            .then(getPreviewsHashes)
-            .then(mapPreviewsDates)
-
-    const images =
-        getLocalImages()
-            .then(getLocalImagesHashes)
-
-    Promise.all([images, previews])
+    parseLinks()
+        .then(downloadPreviews)
+        .then(getPreviewsHashes)
+        .then(mapPreviewsDates)
+        .then(getLocalImages)
+        .then(getLocalImagesHashes)
         .then(mappingImagesAndPreviews)
         .then(getMostRelevantResults)
         .then(getUnmappedItems)
