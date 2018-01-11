@@ -1,14 +1,15 @@
 module.exports = {
     portfolioAuthorName: 'vectorpocket',
+    imagesFolder: './images',
     maxPreviewsForPage: 100,
     parseLinksThreads: 1,
     downloadPreviewsThreads: 10,
     getPreviewsHashesThreads: 10,
     getImagesHashesThreads: 5,
-    mapImagesThreads: 8,
-    mapPreviewsThreads: 8,
+    mapImagesThreads: 1,
+    mapPreviewsThreads: 15,
     statusError: 200,
     dateForGettinfDiff: [2000, 1, 1],
-    maxHammingDist: 15, //20
-    maxPixelMatchDiff: 0.47
+    maxHammingDist: 21,
+    maxPixelMatchDiff: 0.56
 }

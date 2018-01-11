@@ -11,10 +11,10 @@ module.exports = () => {
                 const relevantResults = [];
                 const group = _.groupBy(mapped, 'image.path');
                 _.forIn(group, value => {
-                    value = _.sortBy(value, ['pixelMatchDiff']);
+                    value = _.sortBy(value, ['mult']);
                     relevantResults.push(value[0]);
                 });
-                utils.writeToFileSync('./data/map.json', relevantResults); 
+                utils.writeToFileSync('./data/map.json', relevantResults);
                 resolve(logger.log('Getting relevant results is complited!!!')); 
             }, err => reject(logger.error(err)));
     })

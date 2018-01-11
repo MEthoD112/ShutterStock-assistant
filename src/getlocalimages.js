@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const logger = require('./logger');
 const utils = require('./utils');
+const constants = require('./constants');
 
 function getLocalImagesPathes(dir, imagesList) {
     let images = utils.readDir(dir);
@@ -21,7 +22,7 @@ module.exports = () => {
     const now = Date.now();
     logger.log('Getting local images is executed!!!');
     return new Promise((resolve, reject) => {
-        const imagesPathes = getLocalImagesPathes('./images');
+        const imagesPathes = getLocalImagesPathes(constants.imagesFolder);
         utils.readFile('./data/imagesWithHash.json')
             .then(data => {
                 const imagesWithHash = utils.parseArrayData(data);

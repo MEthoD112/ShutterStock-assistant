@@ -22,11 +22,12 @@ function getPreviews(preview, previewCallback, Image, image) {
     .then(Preview => {
       const diff = Jimp.diff(Image, Preview);
       if (diff.percent < constants.maxPixelMatchDiff) {
-        compareResults.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent });
-        _.remove(previewQueue.queue.waiting, queueItem => queueItem.data);
-        _.each(imageQueue.queue.waiting, item =>
-           _.remove(item.data.previews, previewItem => previewItem.id === preview.id)
-        );
+        const mult = dist * diff.percent;
+        compareResults.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
+        // _.remove(previewQueue.queue.waiting, queueItem => queueItem.data);
+        // _.each(imageQueue.queue.waiting, item =>
+        //    _.remove(item.data.previews, previewItem => previewItem.id === preview.id)
+        // );
       } 
       previewCallback();
     })
@@ -57,7 +58,7 @@ module.exports = () => {
     Promise.all([utils.readFile('./data/previewsWithHash.json'),
                  utils.readFile('./data/imagesWithHash.json'),
                  utils.readFile('./data/map.json')])
-      .then((data) => {
+      .then(data => {
         const previews = utils.parseArrayData(data[0]);
         const images = utils.parseArrayData(data[1]);
         const mapped = utils.parseArrayData(data[2]);
