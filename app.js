@@ -20,7 +20,7 @@ const logger = require('./src/logger');
         .then(getLocalImages)
         .then(getLocalImagesHashes)
         .then(mappingImagesAndPreviews)
-        .then(getMostRelevantResults)
+        //.then(getMostRelevantResults)
         .then(getUnmappedItems)
         .then(createReports)
         .catch(err => logger.error(err));
