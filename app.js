@@ -4,6 +4,7 @@ const getPreviewsHashes = require('./src/getPreviewHashes');
 const getLocalImages = require('./src/getlocalimages');
 const getLocalImagesHashes = require('./src/getlocalimageshashes');
 const mappingImagesAndPreviews = require('./src/mapping');
+const getMostRelevantResults = require('./src/getrelevant');
 const getUnmappedItems = require('./src/getunmapped');
 const createReports = require('./src/createreport');
 const logger = require('./src/logger');
@@ -19,6 +20,7 @@ const logger = require('./src/logger');
         .then(getLocalImages)
         .then(getLocalImagesHashes)
         .then(mappingImagesAndPreviews)
+        .then(getMostRelevantResults)
         .then(getUnmappedItems)
         .then(createReports)
         .catch(err => logger.error(err));
