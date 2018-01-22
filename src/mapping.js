@@ -24,12 +24,7 @@ function getPreviews(preview, previewCallback, Image, image) {
         const diff = Jimp.diff(Image, Preview);
         if (diff.percent < constants.maxPixelMatchDiff) {
           const mult = dist * diff.percent;
-          //compareResults.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
           resultsForImage.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
-          // _.remove(previewQueue.queue.waiting, queueItem => queueItem.data);
-          // _.each(imageQueue.queue.waiting, item =>
-          //    _.remove(item.data.previews, previewItem => previewItem.id === preview.id)
-          // );
         }
         previewCallback();
       })
@@ -66,7 +61,9 @@ function mapImagesAndPreviews(previewsAndImage) {
 
 module.exports = () => {
   const now = Date.now();
-  logger.log('Mapping images and previews is executed!!!');
+  logger.log(`----------------------------------------------------------------------------------
+                    Mapping images and previews is executed!!!
+----------------------------------------------------------------------------------`);
   return new Promise((resolve, reject) => {
     Promise.all([utils.readFile('./data/previewsWithHash.json'),
     utils.readFile('./data/imagesWithHash.json'),
@@ -87,12 +84,14 @@ module.exports = () => {
       .then(() => utils.readFile('./data/map.json'))
       .then(mappedJson => {
         const mapped = utils.parseArrayData(mappedJson);
-        logger.log(mapped.length + ' mapped items have been already got!!!');
+        logger.log(`++++ ${mapped.length} mapped items have been already got!!!`);
         mapped.push(...compareResults);
-        logger.log(compareResults.length + ' mapped items were got now!!!');
-        logger.log(mapped.length + ' mapped items were got total!!!');
+        logger.log(`++++ ${compareResults.length} mapped items were got now!!!`);
+        logger.log(`++++ ${mapped.length} mapped items were got total!!!`);
         utils.writeToFileSync('./data/map.json', mapped);
-        resolve(logger.log((Date.now() - now) / 1000 + ' seconds'));
+        resolve(logger.log(`----------------------------------------------------------------------------------
+            Mapping images and previews time is ${(Date.now() - now) / 1000} seconds
+----------------------------------------------------------------------------------`));
       }, err => reject(logger.error(err)));
   });
 };

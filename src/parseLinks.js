@@ -33,7 +33,7 @@ function isReparseNeeded(resultsForPage, url, lastPageNumber) {
   } else if (!isLinkFromPreviousParseReached) {
     logger.log(`Parse ${resultsForPage.length} links from page ${getPageNumber(url)}`);
     parseResults.push(...resultsForPage);
-    logger.log('Parsed links on current moment: ' + parseResults.length);
+    logger.log(`Parsed links on current moment: ${parseResults.length}`);
   }
 }
 
@@ -91,7 +91,9 @@ function parsePortfolio(urls) {
 
 module.exports = () => {
   const now = Date.now();
-  logger.log('ShutterStock Previews Links Parsing is executed!!!');
+  logger.log(`----------------------------------------------------------------------------------
+              ShutterStock Previews Links Parsing is executed!!!
+----------------------------------------------------------------------------------`);
   return new Promise((resolve, reject) => {
     Promise.all([getPageCountAsync(), utils.readFile('./data/previewsLinks.json')])
       .then(data => {
@@ -104,17 +106,19 @@ module.exports = () => {
         if (!previousResults.length) {
           utils.writeToFileSync('./data/previewsLinksDiff.json', parseResults);
           utils.writeToFileSync('./data/previewsLinks.json', parseResults);
-          logger.log('Parsed links total: ' + parseResults.length);
+          logger.log(`++++ Parsed links total: ${parseResults.length}`);
         } else {
           utils.writeToFileSync('./data/previewsLinksDiff.json', parseResults);
-          logger.log('Parsed links already got: ' + previousResults.length);
+          logger.log(`++++ Parsed links already got: ${previousResults.length}`);
           previousResults.push(...parseResults);
           utils.writeToFileSync('./data/previewsLinks.json', previousResults);
-          logger.log('Parsed links now: ' + parseResults.length);
-          logger.log('Parsed links total: ' + previousResults.length);
+          logger.log(`++++ Parsed links now: ${parseResults.length}`);
+          logger.log(`++++ Parsed links total: ${previousResults.length}`);
         }  
-        logger.log('Parsing time: ' + (Date.now() - now) / 1000 + ' seconds');
-        resolve(logger.log('Parsing is complited!!!'));
+        logger.log(`++++ Parsing time: ${(Date.now() - now) / 1000} seconds`);
+        resolve(logger.log(`----------------------------------------------------------------------------------
+                    Previews Links Parsing is complited!!!
+----------------------------------------------------------------------------------`));
       }, err => reject(logger.error(err)));
   });
 };

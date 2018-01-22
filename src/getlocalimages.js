@@ -20,7 +20,9 @@ function getLocalImagesPathes(dir, imagesList) {
 
 module.exports = () => {
     const now = Date.now();
-    logger.log('Getting local images is executed!!!');
+    logger.log(`----------------------------------------------------------------------------------
+                   Getting local images is executed!!!
+----------------------------------------------------------------------------------`);
     return new Promise((resolve, reject) => {
         const imagesPathes = getLocalImagesPathes(constants.imagesFolder);
         utils.readFile('./data/imagesWithHash.json')
@@ -30,7 +32,9 @@ module.exports = () => {
                 const length = imagesPathes.length;
                 !length ? logger.log('All local images are got!!!') : logger.log(`${length} new local images age got`);
                 utils.writeToFileSync('./data/imagesDiff.json', imagesPathes);
-                resolve(logger.log('Getting local images time: ' + (Date.now() - now) / 1000 + ' seconds'));
+                resolve(logger.log(`----------------------------------------------------------------------------------
+                Getting local images time: ${(Date.now() - now) / 1000} seconds
+----------------------------------------------------------------------------------`));
             }, err => reject(logger.error(err)));
     });
 };

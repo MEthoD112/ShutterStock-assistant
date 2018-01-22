@@ -134,7 +134,9 @@ function createHtml(mappedResults, unMappedPreviews, unMappedImages, downloadPre
 }
 
 module.exports = () => {
-  logger.log('Creating reports is executed!!!');
+  logger.log(`----------------------------------------------------------------------------------
+            Creating reports is executed!!!
+----------------------------------------------------------------------------------`);
   const promiseArray = [
     utils.readFile('./data/map.json', 'utf8'),
     utils.readFile('./data/unmappedpreviews.json', 'utf8'),

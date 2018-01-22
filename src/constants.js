@@ -5,11 +5,10 @@ module.exports = {
     parseLinksThreads: 1,
     downloadPreviewsThreads: 10,
     getPreviewsHashesThreads: 10,
-    getImagesHashesThreads: 5,
+    getImagesHashesThreads: 8,
     mapImagesThreads: 1,
     mapPreviewsThreads: 15,
     statusError: 200,
-    dateForGettinfDiff: [2000, 1, 1],
     maxHammingDist: 21,
     maxPixelMatchDiff: 0.56
 }

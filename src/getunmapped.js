@@ -13,7 +13,9 @@ function getUnCompareImages(images, mappedResults) {
 }
 
 module.exports = () => {
-    logger.log('Getting unmapped images and previews is executed');
+    logger.log(`----------------------------------------------------------------------------------
+                Getting unmapped images and previews is executed
+----------------------------------------------------------------------------------`);
     return new Promise((resolve, reject) => {
         const promiseArray = [
             utils.readFile('./data/map.json'),
@@ -31,7 +33,9 @@ module.exports = () => {
     
                 utils.writeToFileSync('./data/unmappedpreviews.json', unMappedPreviews);
                 utils.writeToFileSync('./data/unmappedimages.json', unMappedImages);
-                resolve(logger.log('Getting unmapped images and previews is complited'));
+                resolve(logger.log(`----------------------------------------------------------------------------------
+                Getting unmapped images and previews is complited
+----------------------------------------------------------------------------------`));
             }, err => reject(logger.error(err)));
     });
 }

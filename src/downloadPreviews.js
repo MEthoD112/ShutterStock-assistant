@@ -10,8 +10,8 @@ const handleError = (fileName, status) => {
   errorResults.push({ id: fileName, status });
 }
 
-const handleDownload = (fileName, lastModified) => {
-  downloadResults.push({ id: fileName, lastModified });
+const handleDownload = (fileName) => {
+  downloadResults.push({ id: fileName });
 }
 
 function downloadPreview(image, callback) {
@@ -23,7 +23,7 @@ function downloadPreview(image, callback) {
         handleError(fileName, response.statusCode);
       } else {
         logger.log(`${fileName}.jpg is downloading!!!`);
-        handleDownload(fileName, response.headers['last-modified']);
+        handleDownload(fileName);
       }
     })
     .on('end', callback)
@@ -40,29 +40,33 @@ function downloadPreviews(previewsLinks) {
 
 module.exports = () => {
   const now = Date.now();
-  logger.log(`Downloading previews is executed!!!`);
+  logger.log(`----------------------------------------------------------------------------------
+                    Downloading previews is executed!!!
+----------------------------------------------------------------------------------`);
   return new Promise((resolve, reject) => {
     utils.readFile('./data/previewsLinksDiff.json')
       .then(downloadPreviews)
       .then(() => utils.readFile('./data/downloadPreviewsErr.json'))
       .then(downloadErrJson => {
         const previousErrors = utils.parseArrayData(downloadErrJson);
-        logger.log(`${previousErrors.length} downloading previews errors have already got!!!`);
-        logger.log(`${errorResults.length} downloading previews errors are getting now!!!`);
+        logger.log(`++++ ${previousErrors.length} downloading previews errors have already got!!!`);
+        logger.log(`++++ ${errorResults.length} downloading previews errors are getting now!!!`);
         previousErrors.push(...errorResults);
-        logger.log(`${previousErrors.length} downloading previews errors are getting total!!!`);
+        logger.log(`++++ ${previousErrors.length} downloading previews errors are getting total!!!`);
         utils.writeToFileSync('./data/downloadPreviewsErr.json', previousErrors);
         return utils.readFile('./data/downloadPreviews.json')
       })
       .then(downloadedPreviewsJson => {
         const previousDownloadedPreviews = utils.parseArrayData(downloadedPreviewsJson);
-        logger.log(`${previousDownloadedPreviews.length} downloading previews have already got!!!!!!`);
-        logger.log(`${downloadResults.length} previews are downloaded now!!!`);
+        logger.log(`++++ ${previousDownloadedPreviews.length} downloading previews have already got!!!`);
+        logger.log(`++++ ${downloadResults.length} previews are downloaded now!!!`);
         previousDownloadedPreviews.push(...downloadResults);
-        logger.log(`${previousDownloadedPreviews.length} previews are downloaded total!!!`);
+        logger.log(`++++ ${previousDownloadedPreviews.length} previews are downloaded total!!!`);
         utils.writeToFileSync('./data/downloadPreviews.json', previousDownloadedPreviews);
-        logger.log(`Downloading time: ${(Date.now() - now) / 1000} seconds!!!`);
-        resolve(logger.log(`Downloading previews is completed!!!`));
+        logger.log(`++++ Downloading time: ${(Date.now() - now) / 1000} seconds!!!`);
+        resolve(logger.log(`----------------------------------------------------------------------------------
+                    Downloading previews is completed!!!
+----------------------------------------------------------------------------------`));
       }, err => reject(logger.error(err)));
   });
 };
