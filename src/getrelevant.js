@@ -3,7 +3,9 @@ const utils = require('./utils');
 const _ = require('lodash');
 
 module.exports = () => {
-    logger.log('Getting relevant results is executed!!!')
+    logger.log(`----------------------------------------------------------------------------------
+            Getting relevant results is executed!!!
+----------------------------------------------------------------------------------`)
     return new Promise((resolve, reject) => {
         utils.readFile('./data/map.json')
             .then(mappedJson => {
@@ -15,7 +17,9 @@ module.exports = () => {
                     relevantResults.push(value[0]);
                 });
                 utils.writeToFileSync('./data/map.json', relevantResults);
-                resolve(logger.log('Getting relevant results is complited!!!')); 
+                resolve(logger.log(`----------------------------------------------------------------------------------
+            Getting relevant results is complited!!!
+----------------------------------------------------------------------------------`)); 
             }, err => reject(logger.error(err)));
     })
     

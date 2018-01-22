@@ -65,7 +65,7 @@ function getPageAsync(url, callback) {
       isReparseNeeded(resultsForPage, url, lastPageNumber);
       callback();
     })
-    .catch(err => callback(null, () => {logger.error(err); queue.queue.unshift(url)}));
+    .catch(err => callback(queue.queue.unshift(url)));
 }
 
 function parseLastPageNumber(response) {
