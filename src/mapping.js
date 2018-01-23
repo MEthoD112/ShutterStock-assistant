@@ -23,8 +23,8 @@ function getPreviews(preview, previewCallback, Image, image) {
       .then(Preview => {
         const diff = Jimp.diff(Image, Preview);
         if (diff.percent < constants.maxPixelMatchDiff) {
-          const mult = dist * diff.percent;
-          compareResults.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
+          const mult = dist * diff.percent * diff.percent;
+          resultsForImage.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
         }
         previewCallback();
       })
@@ -40,7 +40,19 @@ function getImage(previewsAndImage, callback) {
       previewQueue = new utils.Queue(previewsAndImage.previews, (preview, previewCallback) => {
         getPreviews(preview, previewCallback, Image, previewsAndImage.image);
       }, constants.mapPreviewsThreads);
-      return previewQueue.fullfillQueue().then(() => callback());
+      return previewQueue.fullfillQueue().then(() => {
+        const group = _.groupBy(resultsForImage, 'image.path');
+        _.forIn(group, value => {
+          value = _.sortBy(value, ['mult']);
+          compareResults.push(value[0]);
+          imageQueue.queue.pause();
+          _.each(imageQueue.queue.waiting, item =>
+            _.remove(item.data.previews, previewItem => previewItem.id === value[0].preview.id)
+          );
+          imageQueue.queue.resume();
+        });
+        callback();
+      });
     }).catch(err => callback(null, logger.log(err)));
 }
 
