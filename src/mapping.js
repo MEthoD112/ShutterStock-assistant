@@ -45,6 +45,8 @@ function getImage(previewsAndImage, callback) {
         _.forIn(group, value => {
           value = _.sortBy(value, ['mult']);
           compareResults.push(value[0]);
+          logger.log(`Image: ${value[0].image.path} is mapped!!!!`);
+          logger.log(`Mapped images: ${compareResults.length}`);
           imageQueue.queue.pause();
           _.each(imageQueue.queue.waiting, item =>
             _.remove(item.data.previews, previewItem => previewItem.id === value[0].preview.id)
