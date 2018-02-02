@@ -112,82 +112,82 @@ function throwError(error, cb) {
  */
 
 function Jimp() {
-    // if ("number" == typeof arguments[0] && "number" == typeof arguments[1]) {
-    //     // create a new image
-    //     var w = arguments[0];
-    //     var h = arguments[1];
-    //     var cb = arguments[2];
+    if ("number" == typeof arguments[0] && "number" == typeof arguments[1]) {
+        // create a new image
+        var w = arguments[0];
+        var h = arguments[1];
+        var cb = arguments[2];
 
-    //     if ("number" == typeof arguments[2]) {
-    //         this._background = arguments[2];
-    //         var cb = arguments[3];
-    //     }
+        if ("number" == typeof arguments[2]) {
+            this._background = arguments[2];
+            var cb = arguments[3];
+        }
 
-    //     if ("undefined" == typeof cb) cb = noop;
-    //     if ("function" != typeof cb)
-    //         return throwError.call(this, "cb must be a function", cb);
+        if ("undefined" == typeof cb) cb = noop;
+        if ("function" != typeof cb)
+            return throwError.call(this, "cb must be a function", cb);
 
-    //     this.bitmap = {
-    //         data: new Buffer(w * h * 4),
-    //         width: w,
-    //         height: h
-    //     };
+        this.bitmap = {
+            data: new Buffer(w * h * 4),
+            width: w,
+            height: h
+        };
 
-    //     // for (var i = 0; i < this.bitmap.data.length; i=i+4) {
-    //     //     this.bitmap.data.writeUInt32BE(this._background, i);
-    //     // }
+        for (var i = 0; i < this.bitmap.data.length; i=i+4) {
+            this.bitmap.data.writeUInt32BE(this._background, i);
+        }
 
-    //     cb.call(this, null, this);
-    // } else if (arguments[0] instanceof Jimp) {
-    //     // clone an existing Jimp
-    //     var original = arguments[0];
-    //     var cb = arguments[1];
+        cb.call(this, null, this);
+    } else if (arguments[0] instanceof Jimp) {
+        // clone an existing Jimp
+        var original = arguments[0];
+        var cb = arguments[1];
 
-    //     if ("undefined" == typeof cb) cb = noop;
-    //     if ("function" != typeof cb)
-    //         return throwError.call(this, "cb must be a function", cb);
+        if ("undefined" == typeof cb) cb = noop;
+        if ("function" != typeof cb)
+            return throwError.call(this, "cb must be a function", cb);
 
-    //     var bitmap = new Buffer(original.bitmap.data.length);
-    //     original.scan(0, 0, original.bitmap.width, original.bitmap.height, function (x, y, idx) {
-    //         var data = original.bitmap.data.readUInt32BE(idx, true);
-    //         bitmap.writeUInt32BE(data, idx, true);
-    //     });
+        var bitmap = new Buffer(original.bitmap.data.length);
+        original.scan(0, 0, original.bitmap.width, original.bitmap.height, function (x, y, idx) {
+            var data = original.bitmap.data.readUInt32BE(idx, true);
+            bitmap.writeUInt32BE(data, idx, true);
+        });
 
-    //     this.bitmap = {
-    //         data: bitmap,
-    //         width: original.bitmap.width,
-    //         height: original.bitmap.height
-    //     };
+        this.bitmap = {
+            data: bitmap,
+            width: original.bitmap.width,
+            height: original.bitmap.height
+        };
 
-    //     this._quality = original._quality;
-    //     this._deflateLevel = original._deflateLevel;
-    //     this._deflateStrategy = original._deflateStrategy;
-    //     this._filterType = original._filterType;
-    //     this._rgba = original._rgba;
-    //     this._background = original._background;
+        this._quality = original._quality;
+        this._deflateLevel = original._deflateLevel;
+        this._deflateStrategy = original._deflateStrategy;
+        this._filterType = original._filterType;
+        this._rgba = original._rgba;
+        this._background = original._background;
 
-    //     cb.call(this, null, this);
-    // } else if (URLRegEx({exact: true}).test(arguments[0])) {
-    //     // read from a URL
-    //     var url = arguments[0];
-    //     var cb = arguments[1];
+        cb.call(this, null, this);
+    } else if (URLRegEx({exact: true}).test(arguments[0])) {
+        // read from a URL
+        var url = arguments[0];
+        var cb = arguments[1];
 
-    //     if ("undefined" == typeof cb) cb = noop;
-    //     if ("function" != typeof cb)
-    //         return throwError.call(this, "cb must be a function", cb);
+        if ("undefined" == typeof cb) cb = noop;
+        if ("function" != typeof cb)
+            return throwError.call(this, "cb must be a function", cb);
 
-    //     var that = this;
-    //     Request(url, function (err, response, data) {
-    //         if (err) return throwError.call(that, err, cb);
-    //         if ("object" == typeof data && Buffer.isBuffer(data)) {
-    //             var mime = getMIMEFromBuffer(data);
-    //             if ("string" != typeof mime)
-    //                 return throwError.call(that, "Could not find MIME for Buffer <" + url + "> (HTTP: " + response.statusCode + ")", cb);
-    //             parseBitmap.call(that, data, mime, cb);
-    //         } else return throwError.call(that, "Could not load Buffer from URL <" + url + "> (HTTP: " + response.statusCode + ")", cb);
-    //     });
-    //} else 
-    //if ("string" == typeof arguments[0]) {
+        var that = this;
+        Request(url, function (err, response, data) {
+            if (err) return throwError.call(that, err, cb);
+            if ("object" == typeof data && Buffer.isBuffer(data)) {
+                var mime = getMIMEFromBuffer(data);
+                if ("string" != typeof mime)
+                    return throwError.call(that, "Could not find MIME for Buffer <" + url + "> (HTTP: " + response.statusCode + ")", cb);
+                parseBitmap.call(that, data, mime, cb);
+            } else return throwError.call(that, "Could not load Buffer from URL <" + url + "> (HTTP: " + response.statusCode + ")", cb);
+        });
+    } else 
+    if ("string" == typeof arguments[0]) {
         // read from a path
         var path = arguments[0];
         var cb = arguments[1];
@@ -197,31 +197,31 @@ function Jimp() {
             return throwError.call(this, "cb must be a function", cb);
 
         var that = this;
-        //getMIMEFromPath(path, function (err, mime) {
+        getMIMEFromPath(path, function (err, mime) {
             FS.readFile(path, function (err, data) {
                 //if (err) return throwError.call(that, err, cb);
                 parseBitmap.call(that, data, 'image/jpeg', cb);
 
             });
-        //});
-    //} 
-    // else if ("object" == typeof arguments[0]) {
-    //     // read from a buffer
-    //     var data = arguments[0];
-    //     var mime = getMIMEFromBuffer(data);
-    //     var cb = arguments[1];
+        });
+    } 
+    else if ("object" == typeof arguments[0]) {
+        // read from a buffer
+        var data = arguments[0];
+        var mime = getMIMEFromBuffer(data);
+        var cb = arguments[1];
 
-    //     if (!Buffer.isBuffer(data))
-    //         return throwError.call(this, "data must be a Buffer", cb);
-    //     if ("string" != typeof mime)
-    //         return throwError.call(this, "mime must be a string", cb);
-    //     if ("function" != typeof cb)
-    //         return throwError.call(this, "cb must be a function", cb);
+        if (!Buffer.isBuffer(data))
+            return throwError.call(this, "data must be a Buffer", cb);
+        if ("string" != typeof mime)
+            return throwError.call(this, "mime must be a string", cb);
+        if ("function" != typeof cb)
+            return throwError.call(this, "cb must be a function", cb);
 
-    //     parseBitmap.call(this, data, mime, cb);
-    // } else {
-    //     return throwError.call(this, "No matching constructor overloading was found. Please see the docs for how to call the Jimp constructor.", cb);
-    // }
+        parseBitmap.call(this, data, mime, cb);
+    } else {
+        return throwError.call(this, "No matching constructor overloading was found. Please see the docs for how to call the Jimp constructor.", cb);
+    }
 }
 
 /**
@@ -294,18 +294,18 @@ function parseBitmap(data, mime, cb) {
     this._originalMime = mime.toLowerCase();
 
     switch (this.getMIME()) {
-        // case Jimp.MIME_PNG:
-        //     var png = new PNG();
-        //     png.parse(data, function(err, data) {
-        //         if (err) return throwError.call(that, err, cb);
-        //         that.bitmap = {
-        //             data: new Buffer(data.data),
-        //             width: data.width,
-        //             height: data.height
-        //         };
-        //         return cb.call(that, null, that);
-        //     });
-        //     break;
+        case Jimp.MIME_PNG:
+            var png = new PNG();
+            png.parse(data, function(err, data) {
+                if (err) return throwError.call(that, err, cb);
+                that.bitmap = {
+                    data: new Buffer(data.data),
+                    width: data.width,
+                    height: data.height
+                };
+                return cb.call(that, null, that);
+            });
+            break;
 
         case Jimp.MIME_JPEG:
             try {
@@ -317,14 +317,14 @@ function parseBitmap(data, mime, cb) {
                 return cb.call(this, err, this);
             }
 
-        // case Jimp.MIME_BMP:
-        // case Jimp.MIME_X_MS_BMP:
-        //       this.bitmap = BMP.decode(data);
-        //       return cb.call(this, null, this);
+        case Jimp.MIME_BMP:
+        case Jimp.MIME_X_MS_BMP:
+              this.bitmap = BMP.decode(data);
+              return cb.call(this, null, this);
 
-        // case Jimp.MIME_GIF:
-        //     this.bitmap = getBitmapFromGIF(data);
-        //     return cb.call(this, null, this);
+        case Jimp.MIME_GIF:
+            this.bitmap = getBitmapFromGIF(data);
+            return cb.call(this, null, this);
 
         default:
             return throwError.call(this, "Unsupported MIME type: " + mime, cb);
@@ -454,18 +454,25 @@ Jimp.limit255 = function(n) {
  * @param (optional) threshold a number, 0 to 1, the smaller the value the more sensitive the comparison (default: 0.1)
  * @returns an object { percent: percent similar, diff: a Jimp image highlighting differences }
  */
-Jimp.diff = function (img1, img2, threshold) {
+Jimp.diff = function (img1, img2, src, threshold) {
     if (!(img1 instanceof Jimp) || !(img2 instanceof Jimp))
         return throwError.call(this, "img1 and img2 must be an Jimp images");
 
     if (img1.bitmap.width != img2.bitmap.width || img1.bitmap.height != img2.bitmap.height) {
+        function cd() {console.log('Image: ' + src + ' is resized and saved')}
         switch (img1.bitmap.width * img1.bitmap.height > img2.bitmap.width * img2.bitmap.height) {
             case true: // img1 is bigger
                 img1.resize(img2.bitmap.width, img2.bitmap.height);
+                if (!FS.existsSync('smallimages/' + src)) {
+                    img1.write('smallimages/' + src , cd);
+                }
                 break;
             default:
                 // img2 is bigger (or they are the same in area)
                 img2.resize(img1.bitmap.width, img1.bitmap.height);
+                if (!FS.existsSync('smallimages/' + src)) {
+                    img2.write('smallimages/' + src, cd);
+                }
                 break;
         }
     }
@@ -2541,7 +2548,7 @@ Jimp.prototype.write = function (path, cb) {
 
     var pathObj = Path.parse(path);
     if (pathObj.dir) MkDirP.sync(pathObj.dir);
-    console.log(pathObj);
+    //console.log(pathObj);
 
     this.getBuffer(mime, function(err, buffer) {
         if (err) return throwError.call(that, err, cb);

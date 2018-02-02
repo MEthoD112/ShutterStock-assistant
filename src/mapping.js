@@ -21,13 +21,14 @@ function getPreviews(preview, previewCallback, Image, image) {
   if (dist < constants.maxHammingDist) {
     Jimp.read('previews/' + preview.id + '.jpg')
       .then(Preview => {
-        const diff = Jimp.diff(Image, Preview);
+        const diff = Jimp.diff(Image, Preview, image.path);
         if (diff.percent < constants.maxPixelMatchDiff) {
           const mult = dist * diff.percent * diff.percent;
           resultsForImage.push({ image, preview, hammingDist: dist, pixelMatchDiff: diff.percent, mult });
         }
         previewCallback();
       })
+      .catch(err => logger.error(err));
   } else {
     previewCallback();
   }

@@ -71,7 +71,7 @@ function fillTableRowsForDownloadingErrors(errors) {
 function fillHtmlTableWithSuccessMaping(results) {
   let html = '';
   results.forEach(result => {
-    html += `<tr><td>${result.image.path}</td><td><img class='image' src=../${result.image.path}></td><td>${result.preview.id}</td><td><a href=${result.preview.imageUrl}>Link</a></td>
+    html += `<tr><td>${result.image.path}</td><td><img class='image' src=../smallimages/${result.image.path}></td><td>${result.preview.id}</td><td><a href=${result.preview.imageUrl}>Link</a></td>
       <td><img class='image' src=../previews/${result.preview.id}.jpg></td></tr>`
   });
   return `<table class="table"><tr><th>LOCAL FILE NAME</th><th>LOCAL PREVIEW</th><th>PREVIEW FILE NAME</th><th>PREVIEW URL</th><th>PREVIEW</th></tr>${html}</table>`;
@@ -89,7 +89,7 @@ function fillHtmlTableWithUnsuccessMappedPreviews(results) {
 function fillHtmlTableWithUnsuccessMappedImages(results) {
   let html = '';
   results.forEach(result => {
-    html += `<tr><td>${result.path}</td><td><img class="image" src=../${result.path}></td></tr>`
+    html += `<tr><td>${result.path}</td><td><img class="image" src=../smallimages/${result.path}></td></tr>`
   });
   return `<table class="table"><tr><th>PATH TO LOCAL IMAGE</th><th>LOCAL IMAGE PREVIEW</th></tr>${html}</table>`;
 }
