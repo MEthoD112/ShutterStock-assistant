@@ -150,17 +150,42 @@ module.exports = () => {
       const unMappedImages = utils.parseArrayData(data[2]);
       const downloadPreviewsErrors = utils.parseArrayData(data[3]);
 
-      const htmlFile = createHtml(mappedResults, unMappedPreviews, unMappedImages, downloadPreviewsErrors);
+      const array = [mappedResults.length, unMappedPreviews.length, unMappedImages.length, downloadPreviewsErrors.length];
+
+      const maxLength = Math.max.apply(null, array);
+
+      const chunkLength = 100;
+
+      const queueItems = [];
+
+      let j = 0;
+
+      for (let i = 0; i < maxLength; i += chunkLength) {
+
+        const mappedResultsChunk = mappedResults.slice(i, i + chunkLength);
+        const unMappedPreviewsChunk = unMappedPreviews.slice(i, i + chunkLength);
+        const unMappedImagesChunk = unMappedImages.slice(i, i + chunkLength);
+        const downloadPreviewsErrorsChunk = downloadPreviewsErrors.slice(i, i + chunkLength);
+
+        const htmlFile = createHtml(mappedResultsChunk, unMappedPreviewsChunk, unMappedImagesChunk, downloadPreviewsErrorsChunk);
+
+        queueItems.push(htmlFile);
+      }
+
+      function createReport(item, done) {
+        j += 1;
+        utils.writeFile(`./reports/report${j}.html`, item)
+          .then(err => {
+            err ? done(logger.error(err)) : done(logger.log(`HTML report is created in ./reports/report${j}.html`));
+          });
+      }
+
+      const q = utils.handleInQueue(queueItems, createReport, 1);
 
       fillTableRowsForSuccessMapping(mappedResults);
       fillTableRowForUnsuccessPreviewsMapping(unMappedPreviews);
       fillTableRowForUnsuccessImagesMapping(unMappedImages);
       fillTableRowsForDownloadingErrors(downloadPreviewsErrors);
-
-      utils.writeFile('./reports/report.html', htmlFile)
-        .then(err => {
-          err ? logger.error(err) : logger.log('HTML report is created in ./reports/report.html');
-        });
 
       workBook.write('./reports/report.xlsx', err => {
         err ? logger.error(err) : logger.log('Excel report is created in ./reports/report.xlsx.');

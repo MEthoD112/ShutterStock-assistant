@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "ShutterStock-assistant",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "report": "node rerun.js"
   },
   "keywords": [
     "nodejs",
@@ -13,7 +14,8 @@
   ],
   "author": "Vitaly Mileshko",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
     "create-html": "^4.1.0",
